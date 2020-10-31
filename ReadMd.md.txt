@@ -1,0 +1,9 @@
+CPE315 
+Assignment 6, part B
+Mansur Ischanov & Salman Wajahat
+
+To run the program:
+  make 
+  make run
+
+We did most of the program over Liveshare through VS Code so we didn't really keep track of who did what.

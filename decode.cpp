@@ -102,6 +102,7 @@ ALU_Ops decode (const ALU_Type data) {
   }
   else if (data.instr.sub3i.op == ALU_SUB3I_OP) {
     // 315: insert code here to print subs instruction
+      cout << "sub r" << data.instr.sub3i.rd << ", r" << data.instr.sub3i.rn << ", #" << data.instr.sub3i.imm << endl;
     return ALU_SUB3I;
   }
   else if (data.instr.add8i.op == ALU_ADD8I_OP) {
@@ -113,6 +114,7 @@ ALU_Ops decode (const ALU_Type data) {
   }
   else if (data.instr.sub8i.op == ALU_SUB8I_OP) {
     // 315: insert code here to print subs instruction
+      cout << "sub r" << data.instr.sub8i.rdn << ", #" << setbase(10) << data.instr.sub8i.imm << endl;
     return ALU_SUB8I;
   }
   else if (data.instr.cmp.op == ALU_CMP_OP) { 
@@ -135,6 +137,7 @@ ALU_Ops decode (const ALU_Type data) {
 DP_Ops decode (const DP_Type data) {
   if (data.instr.DP_Instr.op == DP_CMP) {
     // 315: insert code here to print cmp instruction
+      cout << "cmp r" << data.instr.DP_Instr.rdn << ", r" << data.instr.DP_Instr.rm << endl;
     return DP_CMP;
   }
   else {
@@ -171,11 +174,56 @@ SP_Ops decode (const SP_Type data) {
     return SP_MOV;
   }
   else if (data.instr.add.op == 0) {
-    // Here you'll need to SP_ADD similar to above
+    if (opts.instrs) { 
+      cout << "add";
+      if (data.instr.add.d) {
+        // These two cases handle stack pointer printing
+        if (data.instr.add.rd == 5) {
+          cout << " sp, sp, r" << setbase(10) << data.instr.add.rm << endl;
+        }
+        else if (data.instr.add.rm == 13) {
+          cout << " r" << setbase(10) << (8+data.instr.add.rd) << ", sp" << endl;
+        }
+        // this case is for registers greater than r7 that aren't sp
+        else {
+          cout << " r" << setbase(10) << (8+data.instr.add.rd) << ", r" << setbase(10) << (8+data.instr.add.rd) << ", r" << setbase(10) << data.instr.add.rm << endl;
+        }
+      }
+      // another stack pointer case
+      else if (data.instr.add.rm == 13) {
+        cout << " r" << data.instr.add.rd << ", sp" << endl;
+      }
+      else {
+        cout << " r" << setbase(10) << data.instr.add.rd << ", r" << setbase(10) << data.instr.add.rd << ", r" << data.instr.add.rm << endl;
+      }
+    }
     return SP_ADD;
   }
   else if (data.instr.cmp.op == 1) {
     // Here you'll need to SP_CMP similar to above
+    if (opts.instrs) { 
+      cout << "cmp";
+      if (data.instr.cmp.d) {
+        // These two cases handle stack pointer printing
+        if (data.instr.cmp.rd == 5) {
+          cout << " sp, r" << setbase(10) << data.instr.cmp.rm << endl;
+        }
+        else if (data.instr.cmp.rm == 13) {
+          cout << " r" << setbase(10) << (8+data.instr.cmp.rd) << ", sp" << endl;
+        }
+        // this case is for registers greater than r7 that aren't sp
+        else {
+          cout << " r" << setbase(10) << (8+data.instr.cmp.rd) << ", r" << setbase(10) << data.instr.cmp.rm << endl;
+        }
+      }
+      // another stack pointer case
+      else if (data.instr.cmp.rm == 13) {
+        cout << " r" << data.instr.cmp.rd << ", sp" << endl;
+      }
+      else {
+        cout << " r" << setbase(10) << data.instr.cmp.rd << ", r" << data.instr.cmp.rm << endl;
+      }
+    }
     return SP_CMP;
   }
   else {
@@ -187,19 +235,31 @@ SP_Ops decode (const SP_Type data) {
 LD_ST_Ops decode (const LD_ST_Type data) {
   if (data.instr.class_type.opA == LD_ST_REG_OPA) {
     if (data.instr.class_type.opB == LD_ST_OPB_LDRB) {
-      // 315: write code to print ldrb
+      // 315: write code to print ldrb - done
+      if (opts.instrs) {
+        cout << "ldrb r" << data.instr.ld_st_reg.rt << ", [r" << data.instr.ld_st_reg.rn << ", r" << data.instr.ld_st_reg.rm << "]" << endl;
+      }   
       return LDRBR;
     }
     else if (data.instr.class_type.opB == LD_ST_OPB_STRB) {
-      // 315: write code to print strb
+      // 315: write code to print strb - done
+      if (opts.instrs) { //complete
+        cout << "strb r" << data.instr.ld_st_reg.rt << ", [r" << data.instr.ld_st_reg.rn << ", r" << data.instr.ld_st_reg.rm << "]" << endl;
+      }
       return STRBR;
     }
     else if (data.instr.class_type.opB == LD_ST_OPB_LDR) {
-      // 315: write code to print ldr
+      // 315: write code to print ldr - done
+      if (opts.instrs) {
+        cout << "ldr r" << data.instr.ld_st_reg.rt << ", [r" << data.instr.ld_st_reg.rn << ", r" << data.instr.ld_st_reg.rm << "]" << endl;
+      }
       return LDRR;
     }
     else if (data.instr.class_type.opB == LD_ST_OPB_STR) {
-      // 315: write code to print str
+      // 315: write code to print str - done 
+      if (opts.instrs) {
+        cout << "str r" << data.instr.ld_st_reg.rt << ", [r" << data.instr.ld_st_reg.rn << ", r" << data.instr.ld_st_reg.rm << "]" << endl;
+      }
       return STRR;
     }
   }
@@ -219,11 +279,17 @@ LD_ST_Ops decode (const LD_ST_Type data) {
   }
   else if (data.instr.class_type.opA == LD_ST_IMMB_OPA) {
     if (data.instr.ld_st_imm.op == LD_ST_LDB) {
-      // 315: write code to print ldrb 
+      // 315: write code to print ldrb - done
+      if (opts.instrs){
+        cout << "ldrb r" << data.instr.ld_st_imm.rt << ", [r" << data.instr.ld_st_imm.rn << ", #" << setbase(10) << (data.instr.ld_st_imm.imm*4) << "]" << endl;
+      }
       return LDRBI;
     }
     else if (data.instr.ld_st_imm.op == LD_ST_STB) {
-      // 315: write code to print strb
+      // 315: write code to print strb - done
+      if (opts.instrs){
+        cout << "strb r" << data.instr.ld_st_imm.rt << ", [r" << data.instr.ld_st_imm.rn << ", #" << setbase(10) << (data.instr.ld_st_imm.imm*4) << "]" << endl;
+      }
       return STRBI;
     }
   }
@@ -310,7 +376,6 @@ MISC_Ops decode (const MISC_Type data) {
     return MISC_PUSH;
   }
   else if (data.instr.pop.op == MISC_POP_OP) {
-    // Pop is complete
     if (opts.instrs) { 
       bool multiple = FALSE;
       cout << "pop ";
@@ -421,17 +486,126 @@ BL_Ops decode (const BL_Type data) {
 }
 
 int decode (const LDM_Type data) {
-  // 315: add code to print ldm 
+  // 315: add code to print ldm - done
+  if (opts.instrs) { 
+      bool multiple = FALSE;
+      cout << "ldm ";
+      cout << "r" << data.instr.ldm.rn;
+      cout << "!, {";
+      if (data.instr.ldm.reg_list & 1) {
+        cout << "r0";
+        multiple = TRUE;
+      }
+      if (data.instr.ldm.reg_list & 2) {
+        if (multiple)
+          cout << ", ";
+        cout << "r1";
+        multiple = TRUE;
+      }
+      if (data.instr.ldm.reg_list & 4) {
+        if (multiple)
+          cout << ", ";
+        cout << "r2";
+        multiple = TRUE;
+      }
+      if (data.instr.ldm.reg_list & 8) {
+        if (multiple)
+          cout << ", ";
+        cout << "r3";
+        multiple = TRUE;
+      }
+      if (data.instr.ldm.reg_list & 16) {
+        if (multiple)
+          cout << ", ";
+        cout << "r4";
+        multiple = TRUE;
+      }
+      if (data.instr.ldm.reg_list & 32) {
+        if (multiple)
+          cout << ", ";
+        cout << "r5";
+        multiple = TRUE;
+      }
+      if (data.instr.ldm.reg_list & 64) {
+        if (multiple)
+          cout << ", ";
+        cout << "r6";
+        multiple = TRUE;
+      }
+      if (data.instr.ldm.reg_list & 128) {
+        if (multiple)
+          cout << ", ";
+        cout << "r7";
+        multiple = TRUE;
+      }
+      cout << "}" << endl;
+    }
   return LDM;
 }
 
 int decode (const STM_Type data) {
-  // 315: add code to print ldm 
+  // 315: add code to print ldm - done
+  if (opts.instrs) { 
+      bool multiple = FALSE;
+      cout << "stm ";
+      cout << "r" << data.instr.stm.rn;
+      cout << "!, {";
+      if (data.instr.stm.reg_list & 1) {
+        cout << "r0";
+        multiple = TRUE;
+      }
+      if (data.instr.stm.reg_list & 2) {
+        if (multiple)
+          cout << ", ";
+        cout << "r1";
+        multiple = TRUE;
+      }
+      if (data.instr.stm.reg_list & 4) {
+        if (multiple)
+          cout << ", ";
+        cout << "r2";
+        multiple = TRUE;
+      }
+      if (data.instr.stm.reg_list & 8) {
+        if (multiple)
+          cout << ", ";
+        cout << "r3";
+        multiple = TRUE;
+      }
+      if (data.instr.stm.reg_list & 16) {
+        if (multiple)
+          cout << ", ";
+        cout << "r4";
+        multiple = TRUE;
+      }
+      if (data.instr.stm.reg_list & 32) {
+        if (multiple)
+          cout << ", ";
+        cout << "r5";
+        multiple = TRUE;
+      }
+      if (data.instr.stm.reg_list & 64) {
+        if (multiple)
+          cout << ", ";
+        cout << "r6";
+        multiple = TRUE;
+      }
+      if (data.instr.stm.reg_list & 128) {
+        if (multiple)
+          cout << ", ";
+        cout << "r7";
+        multiple = TRUE;
+      }
+      cout << "}" << endl;
+    }
   return STM;
 }
 
 int decode (const LDRL_Type data) {
-  // 315: add code to print ldr
+  // 315: add code to print ldr - done
+  if (opts.instrs) {
+    cout << "ldr r" << data.instr.ldrl.rt << ", [pc, #" << setbase(10) << data.instr.ldrl.imm * 4 << "]" << endl;
+  }
   return LDRL;
 }
 
